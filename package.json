@@ -1,0 +1,18 @@
+{
+  "name": "frame-scroll-animation",
+  "version": "1.0.0",
+  "bin": {
+    "frame-scroll-animation: "index.js"
+  },
+  "scripts": {
+    "test": "node index.js test/input test/.local/schema.prisma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kerimcharfi/frame-scroll-animation"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "license": "MIT"
+}
