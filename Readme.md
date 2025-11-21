@@ -1,119 +1,125 @@
-Scroll Animation Renderer
+# Scroll Animation Renderer
 
 A lightweight, dependency-free library for ultra-smooth scroll-driven canvas animations.
 
-🚀 Features
+## Features
 
-🎞 Frame-by-frame scroll animations using Canvas
+- 🎞 Frame-by-frame scroll animations using Canvas
+- 🖼 Image sequence support (PNG/JPG)
+- 🧩 Subframe extraction for large spritesheets
+- 🎬 MP4 decoding via the modern `VideoDecoder` API
+- ⚡ High performance thanks to `ImageBitmap` and caching
+- 📦 Zero dependencies
+- 🔌 Easy integration via a custom HTML tag: `<scroll-animation>`
 
-🖼 Image sequence support (PNG/JPG)
+## Installation
 
-🧩 Subframe extraction for large spritesheets
-
-🎬 MP4 decoding using the modern VideoDecoder API
-
-⚡ High performance thanks to ImageBitmap & caching
-
-📦 Zero dependencies
-
-🔌 Easy integration via a custom HTML tag <scroll-animation>
-
-📦 Installation
+### npm
+```
 npm install your-package-name
+```
 
-
-Or include it directly in your HTML:
-
+### CDN / Static
+```
 <script src="scroll-animation.js" type="module"></script>
+```
 
-📝 Usage
-1. Add the custom element
+## Usage
+
+1. Add the custom element:
+   ```html
    <scroll-animation
-   section-id="hero"
-   animation-id="product-spin"
-   host="https://your-host.com/animations">
+       section-id="hero"
+       animation-id="product-spin"
+       host="https://your-host.com/animations">
    </scroll-animation>
+   ```
 
-2. Create an animation.json
+2. Create an `animation.json` alongside the frame assets:
 
-Inside your animation folder:
-
+```
 product-spin/
 ├─ 0001.png
 ├─ 0002.png
 ├─ ...
 └─ animation.json
+```
 
+Example `animation.json`:
 
-Example JSON:
-
+```json
 [
-{
-"imageSrcUrl": "",
-"imgSize": [1920, 1080],
-"numFrames": 120,
-"files": [".png"],
-"numSourceFiles": 120,
-"reverse": false
-}
+  {
+    "imageSrcUrl": "",
+    "imgSize": [1920, 1080],
+    "numFrames": 120,
+    "files": [".png"],
+    "numSourceFiles": 120,
+    "reverse": false
+  }
 ]
+```
 
+This configuration describes how the animation should be loaded and rendered.
 
-This describes how your scroll animation should be loaded and rendered.
+## Folder Structure (example)
 
-📂 Folder Structure (example)
+```
 my-app/
 ├─ animations/
-│ └─ product-spin/
-│    ├─ 0001.png
-│    ├─ 0002.png
-│    ├─ ...
-│    └─ animation.json
+│  └─ product-spin/
+│     ├─ 0001.png
+│     ├─ 0002.png
+│     ├─ ...
+│     └─ animation.json
 ├─ src/
-│ └─ main.js
+│  └─ main.js
 └─ index.html
+```
 
-💡 How it Works
+## How it Works
 
 The library:
 
-Loads all image frames or decodes video frames
+- Loads all image frames or decodes video frames
+- Splits render files into subframes if needed
+- Sorts and caches frames globally
+- Maps scroll position → frame index
+- Renders the selected frame to a `<canvas>` inside your `<scroll-animation>` element
 
-Splits render files into subframes if needed
+### Frame Calculation
 
-Sorts and caches frames globally
-
-Maps scroll position → frame index
-
-Renders the frame to a <canvas> inside your <scroll-animation> element
-
-Frame Calculation
+```js
 getFrameIndex() {
-const currentScrollPosition =
-(-this.scrollSection.getBoundingClientRect().top) /
-((this.height - this.canvasElement.clientHeight) - window.innerHeight);
+  const currentScrollPosition =
+    (-this.scrollSection.getBoundingClientRect().top) /
+    ((this.height - this.canvasElement.clientHeight) - window.innerHeight);
 
-    return Math.round(currentScrollPosition * this.numFrames);
+  return Math.round(currentScrollPosition * this.numFrames);
 }
+```
 
-🎬 MP4 Video Support
+## MP4 Video Support
 
-If your animation consists of a single .mp4 file, the library uses the built-in VideoDecoder API:
+If your animation is a single `.mp4` file, the library uses the `VideoDecoder` API:
 
+```js
 const videoDecoder = new VideoDecoder({
-output: (frame) => {
-createImageBitmap(frame).then((bitmap) => {
-bitmap.index = images.length;
-images.push(bitmap);
+  output: (frame) => {
+    createImageBitmap(frame).then((bitmap) => {
+      bitmap.index = images.length;
+      images.push(bitmap);
+    });
+  },
+  error: console.error
 });
-},
-error: console.error
-});
+```
 
+This lets you deliver high-quality scroll animations without storing hundreds of images.
 
-This allows you to create high-quality scroll animations without storing hundreds of images.
+## Example Demo
 
-🧪 Example Demo
+```html
 <section id="hero" style="height: 300vh;">
     <scroll-animation
         section-id="hero"
@@ -125,53 +131,58 @@ This allows you to create high-quality scroll animations without storing hundred
 <script type="module">
     import './scroll-animation.js';
 </script>
+```
 
-⚙️ Options (from animation.json)
-Key	Type	Description
-imageSrcUrl	string	Base path for frames
-imgSize	[w,h]	Frame width & height
-numFrames	number	Total frames
-numSourceFiles	number	Number of source files
-files	string[]	Filenames or extension
-reverse	boolean	Play animation backwards
-range	[a,b]	Scroll range control
-id	string	Cache id
-🧭 Custom Element API
+## Options (from animation.json)
 
-Your custom <scroll-animation> tag supports:
+| Key             | Type       | Description                     |
+|-----------------|------------|---------------------------------|
+| imageSrcUrl     | `string`   | Base path for frames            |
+| imgSize         | `[w,h]`   | Frame width & height            |
+| numFrames       | `number`   | Total frames                    |
+| numSourceFiles  | `number`   | Number of source files          |
+| files           | `string[]` | Filenames or extension          |
+| reverse         | `boolean`  | Play animation backwards        |
+| range           | `[a,b]`   | Scroll range control            |
+| id              | `string`   | Cache identifier                |
 
-Attribute	Purpose
-section-id	The section tied to scroll position
-animation-id	Folder name / animation config id
-host	Server location of your animations
+## Custom Element API
+
+Your `<scroll-animation>` tag supports these attributes:
+
+| Attribute     | Purpose                                   |
+|---------------|-------------------------------------------|
+| section-id    | Section tied to the scroll position        |
+| animation-id  | Folder name / animation config identifier |
+| host          | Server location of your animation assets  |
 
 Example:
 
+```html
 <scroll-animation section-id="intro" animation-id="car" host="/assets/animations"></scroll-animation>
+```
 
-🛠 Development
+## Development
 
-Build / test commands depend on your project setup.
-Add them here if needed:
+Build and test commands depend on your project setup; add more if needed.
 
+```
 npm run dev
 npm run build
+```
 
-🤝 Contributing
+## Contributing
 
-Contributions, issues, and feature requests are welcome!
-Feel free to open a PR or start a discussion.
+Contributions, issues, and feature requests are welcome — feel free to open a PR or start a discussion.
 
-📄 License
+## License
 
 MIT License — free to use, modify, and distribute.
 
-⭐ Support the Project
+## Support
 
 If you find this library useful, please consider:
 
-⭐ starring the repo
-
-🐛 reporting issues
-
-💬 suggesting new features
+- ⭐ Starring the repo
+- 🐛 Reporting issues
+- 💬 Suggesting new features
