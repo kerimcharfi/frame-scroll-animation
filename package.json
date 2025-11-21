@@ -2,7 +2,7 @@
   "name": "frame-scroll-animation",
   "version": "1.0.0",
   "bin": {
-    "frame-scroll-animation: "index.js"
+    "frame-scroll-animation": "index.js"
   },
   "scripts": {
     "test": "node index.js test/input test/.local/schema.prisma"
