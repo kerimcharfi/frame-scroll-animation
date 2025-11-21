@@ -1,6 +1,6 @@
 {
   "name": "frame-scroll-animation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bin": {
     "frame-scroll-animation": "index.js"
   },
